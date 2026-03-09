@@ -1,0 +1,15 @@
+node_modules
+dist
+.npm
+npm-debug.log
+.env
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!open-gravity-87b55-firebase-adminsdk-pbsvc-*.json
+.git
+.agents
+.agent
+brain
+tmp

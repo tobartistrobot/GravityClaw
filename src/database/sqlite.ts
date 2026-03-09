@@ -16,6 +16,10 @@ class DatabaseService {
             // Intentar cargar desde variable de entorno (ideal para Railway/Cloud)
             if (process.env.FIREBASE_SERVICE_ACCOUNT) {
                 serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+                // Normalizar la clave privada: los saltos de línea pueden venir escapados como "\\n"
+                if (serviceAccount.private_key) {
+                    serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, "\n");
+                }
                 console.log("🌟 Cargando credenciales de Firebase desde variable de entorno.");
             } else if (env.GOOGLE_APPLICATION_CREDENTIALS) {
                 // Cargar desde archivo local

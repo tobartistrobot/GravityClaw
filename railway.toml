@@ -1,0 +1,13 @@
+[build]
+  builder = "DOCKERFILE"
+  dockerfilePath = "Dockerfile"
+
+[deploy]
+  startCommand = "npm start"
+  restartPolicyType = "ON_FAILURE"
+  restartPolicyMaxRetries = 10
+
+[service]
+  # Telegram bot doesn't need an exposed port, but Railway often requires one to detect the service.
+  # If the bot only uses long polling, we can ignore this or set a dummy port.
+  tcpCheckTimeout = 1000

@@ -12,7 +12,9 @@ const envSchema = z.object({
     OPENROUTER_API_KEY: z.string().optional(),
     OPENROUTER_MODEL: z.string().default("openrouter/free"),
     DB_PATH: z.string().default("./memory.db"),
-    GOOGLE_APPLICATION_CREDENTIALS: z.string().min(1, "GOOGLE_APPLICATION_CREDENTIALS es obligatorio para Firebase"),
+    GOOGLE_APPLICATION_CREDENTIALS: z.string().nullish(),
+    FIREBASE_SERVICE_ACCOUNT: z.string().nullish(),
+    GOOGLE_AI_API_KEY: z.string().min(1, "GOOGLE_AI_API_KEY es obligatorio para la generación de imágenes"),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

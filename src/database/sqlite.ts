@@ -17,11 +17,13 @@ class DatabaseService {
             if (process.env.FIREBASE_SERVICE_ACCOUNT) {
                 serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
                 console.log("🌟 Cargando credenciales de Firebase desde variable de entorno.");
-            } else {
+            } else if (env.GOOGLE_APPLICATION_CREDENTIALS) {
                 // Cargar desde archivo local
                 const path = env.GOOGLE_APPLICATION_CREDENTIALS;
                 serviceAccount = JSON.parse(readFileSync(path, "utf8"));
                 console.log(`📂 Cargando credenciales de Firebase desde archivo: ${path}`);
+            } else {
+                throw new Error("❌ No se encontraron credenciales de Firebase (ni en FIREBASE_SERVICE_ACCOUNT ni en GOOGLE_APPLICATION_CREDENTIALS)");
             }
 
             admin.initializeApp({

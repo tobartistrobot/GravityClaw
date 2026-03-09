@@ -1,13 +1,31 @@
-import { Bot, Context } from "grammy";
+import { Bot, Context, InputFile } from "grammy";
 import { env } from "../config/env.js";
 import { agent } from "../agent/loop.js";
+
+// Instancia única del bot para ser usada en broadcasting
+const bot = new Bot(env.TELEGRAM_BOT_TOKEN);
+
+/**
+ * Función para enviar mensajes programados a un usuario específico.
+ * Soporta texto y fotos (como URL o Buffer).
+ */
+export const sendBroadcast = async (userId: string, text: string, photo?: string | Buffer) => {
+    try {
+        if (photo) {
+            const photoContent = Buffer.isBuffer(photo) ? new InputFile(photo, "buenos-dias.png") : photo;
+            await bot.api.sendPhoto(userId, photoContent, { caption: text, parse_mode: "Markdown" });
+        } else {
+            await bot.api.sendMessage(userId, text, { parse_mode: "Markdown" });
+        }
+    } catch (error) {
+        console.error(`❌ Error en broadcast a ${userId}:`, error);
+    }
+};
 
 /**
  * Configuración y arranque del bot de Telegram.
  */
 export const startBot = () => {
-    const bot = new Bot(env.TELEGRAM_BOT_TOKEN);
-
     /**
      * Middleware de seguridad: Whitelist de usuarios.
      */
@@ -44,10 +62,15 @@ export const startBot = () => {
 
         try {
             const response = await agent.run(userId, userText);
+
+            // Si la respuesta indica que se está procesando algo pesado o es un broadcast manual
+            // Pero aquí el bot.on("message:text") es reactivo. 
+            // El broadcast de la mañana se maneja en otro lugar (loop.ts o cron).
+
             await ctx.reply(response);
         } catch (error) {
             console.error("❌ Error procesando mensaje:", error);
-            await ctx.reply("Lo siento, hubo un error interno procesando tu solicitud.");
+            await ctx.reply("😔 Lo siento, ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.");
         }
     });
 

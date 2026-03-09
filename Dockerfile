@@ -3,8 +3,12 @@ FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# Instalar dependencias necesarias para compilar (especialmente para extensiones nativas si las hubiera)
-RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+# Instalar dependencias necesarias para compilar extensiones nativas (como better-sqlite3)
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 RUN npm install
@@ -17,14 +21,17 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Instalar solo dependencias de producción
+# Dependencias mínimas para ejecución (sqlite3 necesita librerías de sistema básicas que vienen en slim)
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY package*.json ./
 RUN npm install --omit=dev
 
-# Copiar archivos compilados y archivos necesarios de la etapa anterior
+# Copiar archivos compilados
 COPY --from=builder /app/dist ./dist
-# Nota: El archivo de credenciales de Firebase se pasará como volumen o se inyectará, 
-# pero el Dockerfile debe estar preparado.
+# Copiar archivos estáticos o de configuración necesarios si los hubiera (ej: assets)
 
 ENV NODE_ENV=production
 

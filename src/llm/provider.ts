@@ -20,7 +20,7 @@ class LLMProvider {
         try {
             const response = await this.groq.chat.completions.create({
                 messages,
-                model: "llama-3.3-70b-specdec", // Modelo gratuito recomendado
+                model: "llama-3.3-70b-versatile", // Modelo actualizado
                 tools: tools as any,
                 tool_choice: "auto",
             });

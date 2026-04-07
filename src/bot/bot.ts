@@ -1,6 +1,7 @@
 import { Bot, Context, InputFile } from "grammy";
 import { env } from "../config/env.js";
 import { agent } from "../agent/loop.js";
+import { dbService } from "../database/sqlite.js";
 
 // Instancia única del bot para ser usada en broadcasting
 const bot = new Bot(env.TELEGRAM_BOT_TOKEN);
@@ -47,7 +48,21 @@ export const startBot = () => {
      * Comando de inicio.
      */
     bot.command("start", (ctx) => {
-        ctx.reply("🤖 ¡Hola! Soy OpenGravity, tu agente personal. ¿En qué puedo ayudarte hoy?");
+        ctx.reply("🤖 ¡Hola! Soy OpenGravity, tu Asistente Personal de Élite. ¿En qué puedo ayudarte hoy?");
+    });
+
+    /**
+     * Comando para resetear el historial.
+     */
+    bot.command("reset", async (ctx) => {
+        const userId = ctx.from?.id.toString();
+        if (!userId) return;
+        try {
+            await dbService.clearHistory(userId);
+            await ctx.reply("🧹 Historial limpiado. ¡Empecemos de cero!");
+        } catch (error) {
+            await ctx.reply("❌ Error al limpiar el historial.");
+        }
     });
 
     /**

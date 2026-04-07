@@ -15,6 +15,10 @@ const envSchema = z.object({
     GOOGLE_APPLICATION_CREDENTIALS: z.string().nullish(),
     FIREBASE_SERVICE_ACCOUNT: z.string().nullish(),
     GOOGLE_AI_API_KEY: z.string().min(1, "GOOGLE_AI_API_KEY es obligatorio para la generación de imágenes"),
+    SMTP_HOST: z.string().optional(),
+    SMTP_PORT: z.string().optional().default("587"),
+    SMTP_USER: z.string().optional(),
+    SMTP_PASS: z.string().optional(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
